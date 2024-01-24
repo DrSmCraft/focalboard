@@ -245,6 +245,20 @@ class Mutator {
         )
     }
 
+
+    async changeBlockParent(boardId: string, blockId: string, oldParent: string, newParent: string, description = 'change block parent') {
+        await undoManager.perform(
+            async () => {
+                await octoClient.patchBlock(boardId, blockId, {parentId: newParent})
+            },
+            async () => {
+                await octoClient.patchBlock(boardId, blockId, {parentId: oldParent})
+            },
+            description,
+            this.undoGroupId,
+        )
+    }
+
     async changeBoardTitle(boardId: string, oldTitle: string, newTitle: string, description = 'change board title') {
         await undoManager.perform(
             async () => {
