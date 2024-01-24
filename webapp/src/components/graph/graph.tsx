@@ -1,23 +1,23 @@
+import React, { useCallback } from "react";
 
-import React, {useCallback} from "react";
+import { FormattedMessage } from "react-intl";
 
-import {FormattedMessage} from "react-intl";
-
-import {IPropertyOption, IPropertyTemplate, Board, BoardGroup} from "../../blocks/board";
-import {createBoardView, BoardView} from "../../blocks/boardView";
-import {Card} from "../../blocks/card";
-import {Constants, Permission} from "../../constants";
+import { IPropertyOption, IPropertyTemplate, Board, BoardGroup } from "../../blocks/board";
+import { createBoardView, BoardView } from "../../blocks/boardView";
+import { Card } from "../../blocks/card";
+import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
-import {Utils} from "../../utils";
-import {useAppDispatch} from "../../store/hooks";
-import {updateView} from "../../store/views";
-import {useHasCurrentBoardPermissions} from "../../hooks/permissions";
+import { Utils } from "../../utils";
+import { useAppDispatch } from "../../store/hooks";
+import { updateView } from "../../store/views";
+import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
 import BoardPermissionGate from "../permissions/boardPermissionGate";
 
 import "./graph.scss";
 
 import HiddenCardCount from "../../components/hiddenCardCount/hiddenCardCount";
+import KanbanCard from "../kanban/kanbanCard";
 
 
 type Props = {
@@ -35,6 +35,16 @@ type Props = {
     onCardClicked: (e: React.MouseEvent, card: Card) => void
     hiddenCardsCount: number
     showHiddenCardCountNotification: (show: boolean) => void
+}
+
+function AdjMatrix(cards: Card[]): { [p: string]: Card[] } {
+    var matrix: { [id: string]: Card[]; } = {};
+    for (const card of cards) {
+        if (matrix[card.parentId] == null)
+            matrix[card.parentId] = [];
+        matrix[card.parentId].push(card);
+    }
+    return matrix;
 }
 
 const Graph = (props: Props): JSX.Element => {
@@ -166,9 +176,16 @@ const Graph = (props: Props): JSX.Element => {
         await mutator.changePropertyOptionValue(board.id, board.cardProperties, groupByProperty!, option, text);
     }, [board, groupByProperty]);
 
+    const mat: { [p: string]: Card[] } = AdjMatrix(cards);
+
+
     return (
-        <div className='Graph'>
-            <h1>This is Graph View</h1>
+        <div className="Graph">
+            {cards.map((card, idx) => {
+                return <div>
+                    <div>{card.title}</div>
+                </div>;
+            })}
         </div>
     );
 };
