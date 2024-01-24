@@ -40,6 +40,7 @@ import octoClient from '../../octoClient'
 import {getCurrentBoardId} from '../../store/boards'
 import {UserSettings} from '../../userSettings'
 import {Archiver} from '../../archiver'
+import GraphIcon from "../../widgets/icons/graph";
 
 const iconForViewType = (viewType: IViewType): JSX.Element => {
     switch (viewType) {
@@ -47,6 +48,7 @@ const iconForViewType = (viewType: IViewType): JSX.Element => {
     case 'table': return <TableIcon/>
     case 'gallery': return <GalleryIcon/>
     case 'calendar': return <CalendarIcon/>
+    case 'graph': return <GraphIcon/>
     default: return <div/>
     }
 }

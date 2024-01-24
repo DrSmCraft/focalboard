@@ -280,15 +280,19 @@ const CardDetail = (props: Props): JSX.Element|null => {
 
                 {/* Property list */}
 
-                {!limited &&
-                <CardDetailProperties
-                    board={props.board}
-                    card={props.card}
-                    cards={props.cards}
-                    activeView={props.activeView}
-                    views={props.views}
-                    readonly={props.readonly}
-                />}
+                {!limited && <>
+                    <p>Card Id: {card.id}</p><br />
+                    <p>Card Parent Id: {card.parentId}</p><br />
+
+                    <CardDetailProperties
+                        board={props.board}
+                        card={props.card}
+                        cards={props.cards}
+                        activeView={props.activeView}
+                        views={props.views}
+                        readonly={props.readonly}
+                    />
+                </>}
 
                 {attachments.length !== 0 && <Fragment>
                     <hr/>

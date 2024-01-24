@@ -22,6 +22,7 @@ import Menu from '../widgets/menu'
 
 import BoardPermissionGate from './permissions/boardPermissionGate'
 import './viewMenu.scss'
+import GraphIcon from "../widgets/icons/graph";
 
 type Props = {
     board: Board
@@ -231,6 +232,44 @@ const ViewMenu = (props: Props) => {
             })
     }, [props.board, props.activeView, props.intl, showView])
 
+
+    const handleAddViewGraph = useCallback(() => {
+        const {board, activeView, intl} = props
+
+        Utils.log('addview-calendar')
+
+        if (!props.allowCreateView()) {
+            return
+        }
+
+        const view = createBoardView()
+        view.title = intl.formatMessage({id: 'View.NewGraphTitle', defaultMessage: 'Graph view'})
+        view.fields.viewType = 'graph'
+        view.parentId = board.id
+        view.boardId = board.id
+        view.fields.visiblePropertyIds = [Constants.titleColumnId]
+
+        const oldViewId = activeView.id
+
+        // Find first date property
+        view.fields.dateDisplayPropertyId = board.cardProperties.find((o: IPropertyTemplate) => o.type === 'date')?.id
+
+        mutator.insertBlock(
+            view.boardId,
+            view,
+            'add view',
+            async (block: Block) => {
+                // This delay is needed because WSClient has a default 100 ms notification delay before updates
+                setTimeout(() => {
+                    Utils.log(`showView: ${block.id}`)
+                    showView(block.id)
+                }, 120)
+            },
+            async () => {
+                showView(oldViewId)
+            })
+    }, [props.board, props.activeView, props.intl, showView])
+
     const {views, intl} = props
 
     const duplicateViewText = intl.formatMessage({
@@ -335,6 +374,12 @@ const ViewMenu = (props: Props) => {
                                 name='Calendar'
                                 icon={<CalendarIcon/>}
                                 onClick={handleAddViewCalendar}
+                            />
+                            <Menu.Text
+                                id='graph'
+                                name='Graph'
+                                icon={<GraphIcon/>}
+                                onClick={handleAddViewGraph}
                             />
                         </div>
                     </Menu.SubMenu>
