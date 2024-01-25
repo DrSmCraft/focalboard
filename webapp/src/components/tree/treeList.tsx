@@ -1,13 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 
-import { FormattedMessage } from "react-intl";
-
-import { IPropertyOption, IPropertyTemplate, Board, BoardGroup } from "../../blocks/board";
-import { createBoardView, BoardView } from "../../blocks/boardView";
+import { Board } from "../../blocks/board";
 import { Card } from "../../blocks/card";
 
-import "./tree.scss";
-import { Utils } from "../../utils";
+import "./treeList.scss";
 import TreeCard from "./treeCard";
 
 type Props = {
@@ -16,11 +12,16 @@ type Props = {
     matrix: { [p: string]: Card[] }
     card: Card | undefined
     visited: string[]
+    root?: boolean
+    onClick?: (e: React.MouseEvent, card: Card) => void
+    onDrop?: (srcCard: Card, dstCard: Card) => void
+    showCard?: (cardId?: string) => void
+
 }
 
 
 const TreeList = (props: Props): JSX.Element => {
-    const { board, cards, matrix, card, visited } = props;
+    const { board, cards, matrix, card, visited, root, showCard, onClick, onDrop } = props;
     if (card === undefined) {
         return <></>;
     }
@@ -28,10 +29,10 @@ const TreeList = (props: Props): JSX.Element => {
         return <></>;
     } else {
         visited.push(card.id as string);
+        const classname: string = root ? "TreeList TreeListRoot" : "TreeList";
         return (
-
             <>
-                <ul className="TreeList">
+                <ul className={classname}>
                     <li>
                         <TreeCard
                             board={board}
@@ -40,10 +41,9 @@ const TreeList = (props: Props): JSX.Element => {
                             isSelected={false}
                             visibleBadges={false}
                             readonly={false}
-                            onDrop={function(srcCard: Card, dstCard: Card): void {
-                            }}
-                            showCard={function(cardId?: string | undefined): void {
-                            }}
+                            onClick={onClick}
+                            onDrop={onDrop}
+                            showCard={showCard}
                             isManualSort={false} />
 
                         {matrix[card.id].map((n: Card) => {
@@ -53,7 +53,11 @@ const TreeList = (props: Props): JSX.Element => {
                                     cards={cards}
                                     matrix={matrix}
                                     card={n}
-                                    visited={visited} />;
+                                    visited={visited}
+                                    root={false}
+                                    onClick={onClick}
+                                    onDrop={onDrop}
+                                    showCard={showCard} />;
                             }
                         )
 

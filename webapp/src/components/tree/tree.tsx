@@ -1,9 +1,7 @@
 import React, { useCallback } from "react";
 
-import { FormattedMessage } from "react-intl";
-
-import { IPropertyOption, IPropertyTemplate, Board, BoardGroup } from "../../blocks/board";
-import { createBoardView, BoardView } from "../../blocks/boardView";
+import { Board, BoardGroup, IPropertyOption, IPropertyTemplate } from "../../blocks/board";
+import { BoardView, createBoardView } from "../../blocks/boardView";
 import { Card } from "../../blocks/card";
 import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
@@ -12,12 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { updateView } from "../../store/views";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
-import BoardPermissionGate from "../permissions/boardPermissionGate";
-
 import "./tree.scss";
-
-import HiddenCardCount from "../../components/hiddenCardCount/hiddenCardCount";
-import KanbanCard from "../kanban/kanbanCard";
 import TreeList from "./treeList";
 import { getCard } from "../../store/cards";
 
@@ -109,9 +102,13 @@ const Tree = (props: Props): JSX.Element => {
         }
     }, [activeView, visibleGroups]);
 
-    const onDropToCard = useCallback((srcCard: Card, dstCard: Card) => {
+    const onDropToCard = useCallback(async (srcCard: Card, dstCard: Card) => {
+        Utils.log(`before srcCard.parentId=${srcCard.parentId}`)
         Utils.log(`onDropToCard: ${dstCard.title}`);
-        onDropToGroup(srcCard, dstCard.fields.properties[activeView.fields.groupById!] as string, dstCard.id);
+        await mutator.changeBlockParent(board.id, srcCard.id, srcCard.parentId, dstCard.id)
+        Utils.log(`after srcCard.parentId=${srcCard.parentId}`)
+
+        // onDropToGroup(srcCard, dstCard.fields.properties[activeView.fields.groupById!] as string, dstCard.id);
     }, [activeView.fields.groupById, cards]);
 
     const onDropToGroup = useCallback((srcCard: Card, groupID: string, dstCardID: string) => {
@@ -189,7 +186,7 @@ const Tree = (props: Props): JSX.Element => {
             {Object.keys(mat).map((cardId) => {
 
                 if (visited.includes(cardId)) {
-                    return <></>
+                    return <></>;
                 } else {
                     return <TreeList
                         board={board}
@@ -197,14 +194,17 @@ const Tree = (props: Props): JSX.Element => {
                         matrix={mat}
                         card={useAppSelector(getCard(cardId))}
                         visited={visited}
-                           />;
+                        root={true}
+                        onDrop={onDropToCard}
+                        onClick={props.onCardClicked}
+                        showCard={props.showCard} />;
                 }
             })
             }
 
-                </div>
+        </div>
 
-                );
-            };
+    );
+};
 
 export default Tree;
