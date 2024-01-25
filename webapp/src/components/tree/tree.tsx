@@ -8,16 +8,18 @@ import { Card } from "../../blocks/card";
 import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
 import { Utils } from "../../utils";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { updateView } from "../../store/views";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
 import BoardPermissionGate from "../permissions/boardPermissionGate";
 
-import "./graph.scss";
+import "./tree.scss";
 
 import HiddenCardCount from "../../components/hiddenCardCount/hiddenCardCount";
 import KanbanCard from "../kanban/kanbanCard";
+import TreeList from "./treeList";
+import { getCard } from "../../store/cards";
 
 
 type Props = {
@@ -37,9 +39,11 @@ type Props = {
     showHiddenCardCountNotification: (show: boolean) => void
 }
 
-function AdjMatrix(cards: Card[]): { [p: string]: Card[] } {
+function adjMatrix(cards: Card[]): { [p: string]: Card[] } {
     var matrix: { [id: string]: Card[]; } = {};
     for (const card of cards) {
+        if (matrix[card.id] == null)
+            matrix[card.id] = [];
         if (matrix[card.parentId] == null)
             matrix[card.parentId] = [];
         matrix[card.parentId].push(card);
@@ -47,7 +51,7 @@ function AdjMatrix(cards: Card[]): { [p: string]: Card[] } {
     return matrix;
 }
 
-const Graph = (props: Props): JSX.Element => {
+const Tree = (props: Props): JSX.Element => {
     const { board, cards, activeView, visibleGroups, groupByProperty, views, hiddenCardsCount } = props;
     const isManualSort = activeView.fields.sortOptions?.length === 0;
     const canEditBoardProperties = useHasCurrentBoardPermissions([Permission.ManageBoardProperties]);
@@ -176,18 +180,31 @@ const Graph = (props: Props): JSX.Element => {
         await mutator.changePropertyOptionValue(board.id, board.cardProperties, groupByProperty!, option, text);
     }, [board, groupByProperty]);
 
-    const mat: { [p: string]: Card[] } = AdjMatrix(cards);
+    const mat: { [p: string]: Card[] } = adjMatrix(cards);
 
+    let visited: string[] = [];
 
     return (
-        <div className="Graph">
-            {cards.map((card, idx) => {
-                return <div>
-                    <div>{card.title}</div>
-                </div>;
-            })}
-        </div>
-    );
-};
+        <div className="Tree">
+            {Object.keys(mat).map((cardId) => {
 
-export default Graph;
+                if (visited.includes(cardId)) {
+                    return <></>
+                } else {
+                    return <TreeList
+                        board={board}
+                        cards={cards}
+                        matrix={mat}
+                        card={useAppSelector(getCard(cardId))}
+                        visited={visited}
+                           />;
+                }
+            })
+            }
+
+                </div>
+
+                );
+            };
+
+export default Tree;

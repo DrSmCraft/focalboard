@@ -65,7 +65,7 @@ import CardLimitNotification from "./cardLimitNotification";
 import Gallery from "./gallery/gallery";
 import { BoardTourSteps, FINISHED, TOUR_BOARD, TOUR_CARD } from "./onboardingTour";
 import ShareBoardTourStep from "./onboardingTour/shareBoard/shareBoard";
-import Graph from "./graph/graph";
+import Tree from "./tree/tree";
 
 type Props = {
     clientConfig?: ClientConfig
@@ -543,8 +543,8 @@ const CenterPanel = (props: Props) => {
                     showHiddenCardCountNotification={hiddenCardCountNotifyHandler}
                 />}
 
-            {activeView.fields.viewType === "graph" &&
-                <Graph
+            {activeView.fields.viewType === "tree" &&
+                <Tree
                     board={props.board}
                     activeView={props.activeView}
                     cards={props.cards}
