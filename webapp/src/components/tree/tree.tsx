@@ -103,10 +103,29 @@ const Tree = (props: Props): JSX.Element => {
     }, [activeView, visibleGroups]);
 
     const onDropToCard = useCallback(async (srcCard: Card, dstCard: Card) => {
-        Utils.log(`before srcCard.parentId=${srcCard.parentId}`)
+
+        if (srcCard === dstCard) {
+            return;
+        }
+        // Utils.log(`before srcCard.parentId=${srcCard.parentId} src.id=${srcCard.id} dstCard.parentId=${dstCard.parentId} dstCard.id=${dstCard.id}`);
         Utils.log(`onDropToCard: ${dstCard.title}`);
-        await mutator.changeBlockParent(board.id, srcCard.id, srcCard.parentId, dstCard.id)
-        Utils.log(`after srcCard.parentId=${srcCard.parentId}`)
+
+        if (srcCard.parentId == dstCard.id) {
+            Utils.log("Immediate parent swap!!!!!");
+
+            // await mutator.changeBlockParent(board.id, srcCard.id, srcCard.parentId, dstCard.parentId);
+            // await mutator.changeBlockParent(board.id, dstCard.id, dstCard.parentId, srcCard.id);
+            await mutator.swapBlockParent(board.id, srcCard, dstCard);
+            return;
+        }
+        if (srcCard.id == dstCard.parentId) {
+            Utils.log("Immediate child swap!!!!!");
+            await mutator.swapBlockChild(board.id, srcCard, dstCard);
+            return;
+        }
+
+        await mutator.changeBlockParent(board.id, srcCard.id, srcCard.parentId, dstCard.id);
+        // Utils.log(`after srcCard.parentId=${srcCard.parentId} src.id=${srcCard.id} dstCard.parentId=${dstCard.parentId} dstCard.id=${dstCard.id}`);
 
         // onDropToGroup(srcCard, dstCard.fields.properties[activeView.fields.groupById!] as string, dstCard.id);
     }, [activeView.fields.groupById, cards]);

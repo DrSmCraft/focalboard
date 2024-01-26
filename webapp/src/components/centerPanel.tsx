@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 /* eslint-disable max-lines */
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -10,32 +10,32 @@ import { ClientConfig } from "../config/clientConfig";
 import { Block } from "../blocks/block";
 import { BlockIcons } from "../blockIcons";
 import { Card, createCard } from "../blocks/card";
-import { Board, IPropertyTemplate, BoardGroup } from "../blocks/board";
+import { Board, BoardGroup, IPropertyTemplate } from "../blocks/board";
 import { BoardView } from "../blocks/boardView";
 import { CardFilter } from "../cardFilter";
 import mutator from "../mutator";
 import { Utils } from "../utils";
 import { UserSettings } from "../userSettings";
 import {
-    getCurrentCard,
     addCard as addCardAction,
     addTemplate as addTemplateAction,
+    getCurrentCard,
     showCardHiddenWarning
 } from "../store/cards";
 import { getCardLimitTimestamp } from "../store/limits";
 import { updateView } from "../store/views";
 import { getVisibleAndHiddenGroups } from "../boardUtils";
-import TelemetryClient, { TelemetryCategory, TelemetryActions } from "../../../webapp/src/telemetry/telemetryClient";
+import TelemetryClient, { TelemetryActions, TelemetryCategory } from "../../../webapp/src/telemetry/telemetryClient";
 
 import { getClientConfig } from "../store/clientConfig";
 
 import "./centerPanel.scss";
 
-import { useAppSelector, useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 import {
-    getMe,
     getBoardUsers,
+    getMe,
     getOnboardingTourCategory,
     getOnboardingTourStarted,
     getOnboardingTourStep,
@@ -356,7 +356,7 @@ const CenterPanel = (props: Props) => {
 
     const cardClicked = useCallback((e: React.MouseEvent, card: Card): void => {
         const { activeView, cards } = props;
-
+        Utils.log(`In centerPanel:cardClicked ${card.title}`);
         if (e.shiftKey) {
             let newSelectedCardIds = [...selectedCardIds];
             if (newSelectedCardIds.length > 0 && (e.metaKey || e.ctrlKey)) {
@@ -381,7 +381,7 @@ const CenterPanel = (props: Props) => {
                 }
                 setSelectedCardIds(newSelectedCardIds);
             }
-        } else if (activeView.fields.viewType === "board" || activeView.fields.viewType === "gallery") {
+        } else if (activeView.fields.viewType === "board" || activeView.fields.viewType === "gallery" || activeView.fields.viewType === "tree") {
             showCard(card.id);
         }
 
