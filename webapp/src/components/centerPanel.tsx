@@ -559,7 +559,7 @@ const CenterPanel = (props: Props) => {
                     onCardClicked={cardClicked}
                     hiddenCardsCount={props.hiddenCardsCount}
                     showHiddenCardCountNotification={hiddenCardCountNotifyHandler}
-                />
+                     />
             }
             <CardLimitNotification
                 showHiddenCardNotification={showHiddenCardCountNotification}

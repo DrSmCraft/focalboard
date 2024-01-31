@@ -93,7 +93,7 @@ describe('Card URL Property', () => {
         cy.findByRole('button', {name: 'Copy'}).should('exist')
     })
 
-    type ViewType = 'Board' | 'Table' | 'Gallery' | 'Calendar'
+    type ViewType = 'Board' | 'Table' | 'Gallery' | 'Calendar' | 'Tree'
 
     const addView = (type: ViewType) => {
         cy.log(`**Add ${type} view**`)

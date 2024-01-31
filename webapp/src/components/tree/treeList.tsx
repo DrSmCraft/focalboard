@@ -1,36 +1,47 @@
 import React from "react";
 
-import { Board } from "../../blocks/board";
+import { Board, IPropertyTemplate } from "../../blocks/board";
 import { Card } from "../../blocks/card";
 
 import "./treeList.scss";
 import { useAppSelector } from "../../store/hooks";
 import { getCard } from "../../store/cards";
 import TreeCard from "./treeCard";
+import CardsAdjacencyList from "./cardsAdjacencyList";
 
 type Props = {
     board: Board
     cards: Card[]
-    matrix: { [p: string]: Card[] }
+    matrix: CardsAdjacencyList
     cardId: string
     visited: string[]
     root?: boolean
     onClick?: (e: React.MouseEvent, card: Card) => void
     onDrop?: (srcCard: Card, dstCard: Card) => void
     showCard?: (cardId?: string) => void
+    visibleBadges: boolean
+    visiblePropertyTemplates: IPropertyTemplate[]
+    readonly: boolean
 
 }
 
 
 const TreeList = (props: Props): JSX.Element => {
-    const { board, cards, matrix, cardId, visited, root, showCard, onClick, onDrop } = props;
-    // if (card === undefined) {
-    //     return <></>;
-    // }
-    // if (visited.includes(card.id as string)) {
-    //     return <></>;
-    // }
-    // else {
+    const {
+        board,
+        cards,
+        matrix,
+        cardId,
+        visited,
+        root,
+        showCard,
+        onClick,
+        onDrop,
+        visibleBadges,
+        visiblePropertyTemplates,
+        readonly
+    } = props;
+
     let selfVisited = visited.includes(cardId);
     const classname: string = root ? "TreeList TreeListRoot" : "TreeList";
 
@@ -38,8 +49,7 @@ const TreeList = (props: Props): JSX.Element => {
 
 
     visited.push(cardId);
-    let children = matrix[cardId].filter((c) => !visited.includes(c.id));
-
+    let children = matrix.getChildren(cardId).filter((c) => !visited.includes(c.id));
 
     return (
         <>
@@ -48,31 +58,33 @@ const TreeList = (props: Props): JSX.Element => {
                     <TreeCard
                         board={board}
                         card={card}
-                        visiblePropertyTemplates={[]}
+                        visiblePropertyTemplates={visiblePropertyTemplates}
                         isSelected={false}
-                        visibleBadges={false}
-                        readonly={false}
+                        visibleBadges={visibleBadges}
+                        readonly={readonly}
                         onClick={onClick}
                         onDrop={onDrop}
                         showCard={showCard}
                         isManualSort={false}
                         visited={visited} />
 
-                    {/*<span>{card?.title}</span>*/}
-
                     {children.map((n: Card) => {
 
-                        return (<TreeList
-                            key={card?.id}
-                            board={board}
-                            cards={cards}
-                            matrix={matrix}
-                            cardId={n.id}
-                            visited={visited}
-                            root={false}
-                            onClick={onClick}
-                            onDrop={onDrop}
-                            showCard={showCard}/>);
+                            return (<TreeList
+                                key={card?.id}
+                                board={board}
+                                cards={cards}
+                                matrix={matrix}
+                                cardId={n.id}
+                                visited={visited}
+                                root={false}
+                                onClick={onClick}
+                                onDrop={onDrop}
+                                showCard={showCard}
+                                visibleBadges={visibleBadges}
+                                visiblePropertyTemplates={visiblePropertyTemplates}
+                                readonly={readonly}
+                            />);
 
                         }
                     )
@@ -84,8 +96,7 @@ const TreeList = (props: Props): JSX.Element => {
         </>
 
     );
-    // }
-    // ;
+
 };
 
 export default TreeList;

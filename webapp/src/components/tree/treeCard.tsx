@@ -20,6 +20,7 @@ import CopyLinkTourStep from "../onboardingTour/copyLink/copy_link";
 import CardActionsMenu from "../cardActionsMenu/cardActionsMenu";
 import CardActionsMenuIcon from "../cardActionsMenu/cardActionsMenuIcon";
 import "./treeCard.scss";
+import { useDrop } from "react-dnd";
 
 export const OnboardingCardClassName = "onboardingCard";
 
@@ -30,7 +31,6 @@ type Props = {
     isSelected: boolean
     visibleBadges: boolean
     visited: string[]
-
     onClick?: (e: React.MouseEvent, card: Card) => void
     readonly: boolean
     onDrop?: (srcCard: Card, dstCard: Card) => void
