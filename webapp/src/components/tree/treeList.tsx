@@ -4,13 +4,15 @@ import { Board } from "../../blocks/board";
 import { Card } from "../../blocks/card";
 
 import "./treeList.scss";
+import { useAppSelector } from "../../store/hooks";
+import { getCard } from "../../store/cards";
 import TreeCard from "./treeCard";
 
 type Props = {
     board: Board
     cards: Card[]
     matrix: { [p: string]: Card[] }
-    card: Card | undefined
+    cardId: string
     visited: string[]
     root?: boolean
     onClick?: (e: React.MouseEvent, card: Card) => void
@@ -21,55 +23,69 @@ type Props = {
 
 
 const TreeList = (props: Props): JSX.Element => {
-    const { board, cards, matrix, card, visited, root, showCard, onClick, onDrop } = props;
-    if (card === undefined) {
-        return <></>;
-    }
-    if (visited.includes(card.id as string)) {
-        return <></>;
-    } else {
-        visited.push(card.id as string);
-        const classname: string = root ? "TreeList TreeListRoot" : "TreeList";
-        return (
-            <>
-                <ul className={classname}>
-                    <li>
-                        <TreeCard
+    const { board, cards, matrix, cardId, visited, root, showCard, onClick, onDrop } = props;
+    // if (card === undefined) {
+    //     return <></>;
+    // }
+    // if (visited.includes(card.id as string)) {
+    //     return <></>;
+    // }
+    // else {
+    let selfVisited = visited.includes(cardId);
+    const classname: string = root ? "TreeList TreeListRoot" : "TreeList";
+
+    let card = useAppSelector(getCard(cardId));
+
+
+    visited.push(cardId);
+    let children = matrix[cardId].filter((c) => !visited.includes(c.id));
+
+
+    return (
+        <>
+            {(selfVisited || card === undefined) ? <></> : <ul className={classname}>
+                <li>
+                    <TreeCard
+                        board={board}
+                        card={card}
+                        visiblePropertyTemplates={[]}
+                        isSelected={false}
+                        visibleBadges={false}
+                        readonly={false}
+                        onClick={onClick}
+                        onDrop={onDrop}
+                        showCard={showCard}
+                        isManualSort={false}
+                        visited={visited} />
+
+                    {/*<span>{card?.title}</span>*/}
+
+                    {children.map((n: Card) => {
+
+                        return (<TreeList
+                            key={card?.id}
                             board={board}
-                            card={card}
-                            visiblePropertyTemplates={[]}
-                            isSelected={false}
-                            visibleBadges={false}
-                            readonly={false}
+                            cards={cards}
+                            matrix={matrix}
+                            cardId={n.id}
+                            visited={visited}
+                            root={false}
                             onClick={onClick}
                             onDrop={onDrop}
-                            showCard={showCard}
-                            isManualSort={false} />
-
-                        {matrix[card.id].map((n: Card) => {
-
-                                return <TreeList
-                                    board={board}
-                                    cards={cards}
-                                    matrix={matrix}
-                                    card={n}
-                                    visited={visited}
-                                    root={false}
-                                    onClick={onClick}
-                                    onDrop={onDrop}
-                                    showCard={showCard} />;
-                            }
-                        )
+                            showCard={showCard}/>);
 
                         }
-                    </li>
-                </ul>
+                    )
+                    }
+                </li>
+            </ul>
+            }
 
-            </>
+        </>
 
-        );
-    }
-    ;
+    );
+    // }
+    // ;
 };
 
 export default TreeList;

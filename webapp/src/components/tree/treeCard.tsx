@@ -29,6 +29,8 @@ type Props = {
     visiblePropertyTemplates: IPropertyTemplate[]
     isSelected: boolean
     visibleBadges: boolean
+    visited: string[]
+
     onClick?: (e: React.MouseEvent, card: Card) => void
     readonly: boolean
     onDrop?: (srcCard: Card, dstCard: Card) => void
@@ -41,7 +43,7 @@ const TreeCard = (props: Props) => {
     const intl = useIntl();
     const [isDragging, isOver, cardRef] = useSortable("card", card, !props.readonly,
         props.onDrop == undefined ? (src: Card, st: Card) => {
-    } : props.onDrop)
+        } : props.onDrop);
     const visiblePropertyTemplates = props.visiblePropertyTemplates || [];
     const match = useRouteMatch<{ boardId: string, viewId: string, cardId?: string }>();
     let className = props.isSelected ? "TreeCard selected" : "TreeCard";
@@ -95,6 +97,7 @@ const TreeCard = (props: Props) => {
 
     const isOnboardingCard = card.title === "Create a new card";
     const showOnboarding = isOnboardingCard && !match.params.cardId && !board.isTemplate && Utils.isFocalboardPlugin();
+
 
     return (
         <>

@@ -6,13 +6,12 @@ import { Card } from "../../blocks/card";
 import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
 import { Utils } from "../../utils";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
 import { updateView } from "../../store/views";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
 import "./tree.scss";
 import TreeList from "./treeList";
-import { getCard } from "../../store/cards";
 
 
 type Props = {
@@ -204,20 +203,18 @@ const Tree = (props: Props): JSX.Element => {
         <div className="Tree">
             {Object.keys(mat).map((cardId) => {
 
-                if (visited.includes(cardId)) {
-                    return <></>;
-                } else {
-                    return <TreeList
-                        board={board}
-                        cards={cards}
-                        matrix={mat}
-                        card={useAppSelector(getCard(cardId))}
-                        visited={visited}
-                        root={true}
-                        onDrop={onDropToCard}
-                        onClick={props.onCardClicked}
-                        showCard={props.showCard} />;
-                }
+
+                return <TreeList
+                    board={board}
+                    cards={cards}
+                    matrix={mat}
+                    cardId={cardId}
+                    visited={visited}
+                    root={true}
+                    onDrop={onDropToCard}
+                    onClick={props.onCardClicked}
+                    showCard={props.showCard} />;
+
             })
             }
 
