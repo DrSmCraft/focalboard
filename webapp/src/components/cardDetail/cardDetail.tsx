@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, { useCallback, useEffect, useRef, useState, Fragment, useMemo } from "react";
-import { FormattedMessage, useIntl, IntlShape } from "react-intl";
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormattedMessage, IntlShape, useIntl } from "react-intl";
 
 import { BlockIcons } from "../../blockIcons";
 import { Card } from "../../blocks/card";
@@ -23,7 +23,7 @@ import TelemetryClient, { TelemetryActions, TelemetryCategory } from "../../tele
 import BlockIconSelector from "../blockIconSelector";
 
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { updateCards, setCurrent as setCurrentCard } from "../../store/cards";
+import { setCurrent as setCurrentCard, updateCards } from "../../store/cards";
 import { updateContents } from "../../store/contents";
 import { Permission } from "../../constants";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
@@ -243,19 +243,7 @@ const CardDetail = (props: Props): JSX.Element | null => {
                     readonly={props.readonly || !canEditBoardCards || limited}
                     spellCheck={true}
                 />
-                <EditableArea
-                    className=""
-                    value={parent}
-                    placeholderText="Parent"
-                    onChange={(newParent: string) => {
-                        Utils.log("NewParent: " + newParent)
-                        setParent(newParent)}}
-                    saveOnEsc={true}
-                    onSave={saveParent}
-                    onCancel={() => setParent(props.card.parentId)}
-                    readonly={props.readonly || !canEditBoardCards || limited}
-                    spellCheck={true}
-                />
+
 
                 {/* Hidden (limited) card copy + CTA */}
 
@@ -305,9 +293,6 @@ const CardDetail = (props: Props): JSX.Element | null => {
                 {/* Property list */}
 
                 {!limited && <>
-                    <p>Card Id: {card.id}</p><br />
-                    <p>Card Parent Id: {card.parentId}</p><br />
-
                     <CardDetailProperties
                         board={props.board}
                         card={props.card}

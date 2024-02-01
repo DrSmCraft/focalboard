@@ -1,20 +1,18 @@
 import React, { useCallback, useMemo } from "react";
 
 import { Board, BoardGroup, IPropertyOption, IPropertyTemplate } from "../../blocks/board";
-import { BoardView, createBoardView } from "../../blocks/boardView";
+import { BoardView } from "../../blocks/boardView";
 import { Card } from "../../blocks/card";
 import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
-import { Utils } from "../../utils";
+import { IDType, Utils } from "../../utils";
 import { useAppDispatch } from "../../store/hooks";
-import { updateView } from "../../store/views";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
 import "./tree.scss";
 import TreeList from "./treeList";
 import CardsAdjacencyList from "./cardsAdjacencyList";
-import { Simulate } from "react-dom/test-utils";
-import drop = Simulate.drop;
+import { useDrop } from "react-dnd";
 
 
 type Props = {
@@ -77,6 +75,19 @@ const Tree = (props: Props): JSX.Element => {
     }, [activeView.fields.groupById, cards]);
 
 
+    const [{ isOver }, onDropToBoard] = useDrop(() => ({
+        accept: "card",
+        collect: (monitor) => ({
+            isOver: monitor.isOver()
+        }),
+        drop: (item: Card, monitor) => {
+            if (monitor.isOver({ shallow: true })) {
+                // Set block's parent id to the board id
+                mutator.changeBlockParent(board.id, item.id, item.parentId, board.id);
+            }
+        }
+    }), [props]);
+
     const propertyNameChanged = useCallback(async (option: IPropertyOption, text: string): Promise<void> => {
         await mutator.changePropertyOptionValue(board.id, board.cardProperties, groupByProperty!, option, text);
     }, [board, groupByProperty]);
@@ -88,11 +99,10 @@ const Tree = (props: Props): JSX.Element => {
 
     visibleGroups.forEach(g => g.cards.forEach(c => visibleCards.push(c.id)));
     return (
-        <div className="Tree" onDrop={(e) => {
-            console.log("Dropping on board");
-        }}>
+        <div className="Tree" ref={onDropToBoard}>
             {adjList.getCardIds().filter(c => visibleCards.includes(c)).map((cardId) =>
                 <TreeList
+                    key={Utils.createGuid(IDType.None)}
                     board={board}
                     cards={cards}
                     matrix={adjList}

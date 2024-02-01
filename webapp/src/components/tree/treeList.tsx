@@ -8,6 +8,7 @@ import { useAppSelector } from "../../store/hooks";
 import { getCard } from "../../store/cards";
 import TreeCard from "./treeCard";
 import CardsAdjacencyList from "./cardsAdjacencyList";
+import { IDType, Utils } from "../../utils";
 
 type Props = {
     board: Board
@@ -56,6 +57,7 @@ const TreeList = (props: Props): JSX.Element => {
             {(selfVisited || card === undefined) ? <></> : <ul className={classname}>
                 <li>
                     <TreeCard
+                        key={card.id}
                         board={board}
                         card={card}
                         visiblePropertyTemplates={visiblePropertyTemplates}
@@ -71,7 +73,7 @@ const TreeList = (props: Props): JSX.Element => {
                     {children.map((n: Card) => {
 
                             return (<TreeList
-                                key={card?.id}
+                                key={Utils.createGuid(IDType.None)}
                                 board={board}
                                 cards={cards}
                                 matrix={matrix}
