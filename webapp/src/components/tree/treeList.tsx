@@ -70,7 +70,7 @@ const TreeList = (props: Props): JSX.Element => {
                         onClick={onClick}
                         onDrop={onDrop}
                         showCard={showCard}
-                        isManualSort={false}
+                        isManualSort={true}
                         visited={visited} />
 
                     {children.map((n: Card) => {

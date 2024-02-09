@@ -51,6 +51,8 @@ const Tree = (props: Props): JSX.Element => {
         if (srcCard === dstCard) {
             return;
         }
+
+
         // Utils.log(`before srcCard.parentId=${srcCard.parentId} src.id=${srcCard.id} dstCard.parentId=${dstCard.parentId} dstCard.id=${dstCard.id}`);
         Utils.log(`onDropToCard: ${dstCard.title}`);
 
@@ -97,16 +99,17 @@ const Tree = (props: Props): JSX.Element => {
     let visited: string[] = [];
     let visibleCards: string[] = [];
 
+    let rootChildren: Card[] = adjList.getChildren(board.id);
     visibleGroups.forEach(g => g.cards.forEach(c => visibleCards.push(c.id)));
     return (
         <div className="Tree" ref={onDropToBoard}>
-            {adjList.getCardIds().filter(c => visibleCards.includes(c)).map((cardId) =>
+            {rootChildren.filter(c => visibleCards.includes(c.id)).map((card) =>
                 <TreeList
                     key={Utils.createGuid(IDType.None)}
                     board={board}
                     cards={cards}
                     matrix={adjList}
-                    cardId={cardId}
+                    cardId={card.id}
                     visited={visited}
                     root={true}
                     onDrop={onDropToCard}
