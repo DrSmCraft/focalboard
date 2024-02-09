@@ -21,11 +21,14 @@ class CardsAdjacencyList {
     }
 
     public getChildren(cardId: string): Card[] {
+        if (this.matrix[cardId] == null) {
+            return [];
+        }
         return this.matrix[cardId];
     }
 
     public getCardIds(): string[] {
-        return Object.keys(this.matrix)
+        return Object.keys(this.matrix);
     }
 
 }

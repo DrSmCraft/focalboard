@@ -20,7 +20,6 @@ import CopyLinkTourStep from "../onboardingTour/copyLink/copy_link";
 import CardActionsMenu from "../cardActionsMenu/cardActionsMenu";
 import CardActionsMenuIcon from "../cardActionsMenu/cardActionsMenuIcon";
 import "./treeCard.scss";
-import { useDrop } from "react-dnd";
 
 export const OnboardingCardClassName = "onboardingCard";
 
@@ -156,6 +155,8 @@ const TreeCard = (props: Props) => {
                     >
                         {card.title || intl.formatMessage({ id: "TreeCard.untitled", defaultMessage: "Untitled" })}
                     </div>
+                    <br />
+                    <div className={'Debug'}>{card.parentId} -&gt; {card.id}</div>
                 </div>
                 {visiblePropertyTemplates.map((template) => (
                     <Tooltip

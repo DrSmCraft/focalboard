@@ -52,8 +52,11 @@ const TreeList = (props: Props): JSX.Element => {
     visited.push(cardId);
     let children = matrix.getChildren(cardId).filter((c) => !visited.includes(c.id));
 
+
     return (
         <>
+
+
             {(selfVisited || card === undefined) ? <></> : <ul className={classname}>
                 <li>
                     <TreeCard
@@ -71,7 +74,6 @@ const TreeList = (props: Props): JSX.Element => {
                         visited={visited} />
 
                     {children.map((n: Card) => {
-
                             return (<TreeList
                                 key={Utils.createGuid(IDType.None)}
                                 board={board}
