@@ -155,8 +155,6 @@ const TreeCard = (props: Props) => {
                     >
                         {card.title || intl.formatMessage({ id: "TreeCard.untitled", defaultMessage: "Untitled" })}
                     </div>
-                    <br />
-                    <div className={"Debug"}>{card.parentId} -&gt; {card.id}</div>
                 </div>
                 {visiblePropertyTemplates.map((template) => (
                     <Tooltip

@@ -105,7 +105,7 @@ class Mutator {
         );
     }
 
-    private async updateBlocks(boardId: string, newBlocks: Block[], oldBlocks: Block[], description: string): Promise<void> {
+    async updateBlocks(boardId: string, newBlocks: Block[], oldBlocks: Block[], description: string): Promise<void> {
         if (newBlocks.length !== oldBlocks.length) {
             throw new Error("new and old blocks must have the same length when updating blocks");
         }

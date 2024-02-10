@@ -6,14 +6,13 @@ import { Card } from "../../blocks/card";
 import { Constants, Permission } from "../../constants";
 import mutator from "../../mutator";
 import { IDType, Utils } from "../../utils";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useHasCurrentBoardPermissions } from "../../hooks/permissions";
 
 import "./tree.scss";
 import TreeList from "./treeList";
 import CardsAdjacencyList from "./cardsAdjacencyList";
 import { useDrop } from "react-dnd";
-
 
 type Props = {
     selectedCardIds: string[]
@@ -99,8 +98,10 @@ const Tree = (props: Props): JSX.Element => {
     let visited: string[] = [];
     let visibleCards: string[] = [];
 
+
     let rootChildren: Card[] = adjList.getChildren(board.id);
     visibleGroups.forEach(g => g.cards.forEach(c => visibleCards.push(c.id)));
+
     return (
         <div className="Tree" ref={onDropToBoard}>
             {rootChildren.filter(c => visibleCards.includes(c.id)).map((card) =>
