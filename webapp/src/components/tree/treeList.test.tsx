@@ -1,13 +1,9 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 import React from 'react'
-import {render, screen, within} from '@testing-library/react'
+import {render} from '@testing-library/react'
 import '@testing-library/jest-dom'
 import {MemoryRouter} from 'react-router-dom'
-
-import {Provider as ReduxProvider} from 'react-redux'
-
-import userEvent from '@testing-library/user-event'
 
 import {mocked} from 'jest-mock'
 
@@ -16,9 +12,10 @@ import {Utils} from '../../utils'
 
 import {TestBlockFactory} from '../../test/testBlockFactory'
 import {IPropertyTemplate} from '../../blocks/board'
-import {mockStateStore, wrapDNDIntl} from '../../testUtils'
+import {wrapDNDIntl} from '../../testUtils'
 
-import TreeCard from './treeCard'
+import TreeList from './treeList'
+import CardsAdjacencyList from './cardsAdjacencyList'
 
 jest.mock('../../mutator')
 jest.mock('../../utils')
@@ -28,7 +25,18 @@ const mockedMutator = mocked(Mutator, true)
 
 describe('src/components/tree/treeList', () => {
     const board = TestBlockFactory.createBoard()
+    board.id = 'board'
     const card = TestBlockFactory.createCard(board)
+    card.id = 'id'
+    card.parentId = board.id
+
+    const card1 = TestBlockFactory.createCard(board)
+    card1.id = 'id1'
+    card1.parentId = board.id
+    const card2 = TestBlockFactory.createCard(board)
+    card2.id = 'id2'
+    card2.parentId = card1.id
+
     const propertyTemplate: IPropertyTemplate = {
         id: 'id',
         name: 'name',
@@ -46,61 +54,86 @@ describe('src/components/tree/treeList', () => {
             },
         ],
     }
-    const state = {
-        cards: {
-            cards: [card],
-        },
-        teams: {
-            current: {id: 'team-id'},
-        },
-        boards: {
-            current: 'board_id_1',
-            boards: {
-                board_id_1: {id: 'board_id_1'},
-            },
-            myBoardMemberships: {
-                board_id_1: {userId: 'user_id_1', schemeAdmin: true},
-            },
-        },
-        contents: {},
-        comments: {
-            comments: {},
-        },
-        users: {
-            me: {
-                id: 'user_id_1',
-                props: {},
-            },
-        },
-    }
-    const store = mockStateStore([], state)
-    beforeEach(jest.clearAllMocks)
 
-    test('return treeCard and click on copy link menu ', () => {
+    test('should generate treeList of one  card', () => {
+        const cards = [card]
+        const matrix = new CardsAdjacencyList(cards)
         const {container} = render(wrapDNDIntl(
-            <ReduxProvider store={store}>
-                <TreeCard
-                    card={card}
-                    board={board}
-                    visiblePropertyTemplates={[propertyTemplate]}
-                    visibleBadges={false}
-                    isSelected={false}
-                    readonly={false}
-                    onDrop={jest.fn()}
-                    showCard={jest.fn()}
-                    isManualSort={false}
-                    visited={[]}
-
-                />
-            </ReduxProvider>,
+            <TreeList
+                card={card}
+                board={board}
+                cards={cards}
+                visiblePropertyTemplates={[propertyTemplate]}
+                visibleBadges={false}
+                readonly={false}
+                visited={[]}
+                matrix={matrix}
+                root={true}
+            />,
         ), {wrapper: MemoryRouter})
-        const elementMenuWrapper = screen.getByRole('button', {name: 'menuwrapper'})
-        expect(elementMenuWrapper).not.toBeNull()
-        userEvent.click(elementMenuWrapper)
+
         expect(container).toMatchSnapshot()
-        const elementButtonCopyLink = within(elementMenuWrapper).getByRole('button', {name: 'Copy link'})
-        expect(elementButtonCopyLink).not.toBeNull()
-        userEvent.click(elementButtonCopyLink)
-        expect(mockedUtils.copyTextToClipboard).toBeCalledTimes(1)
+    })
+
+    test('should generate treeList of no cards', () => {
+        const cards = [card]
+        const matrix = new CardsAdjacencyList(cards)
+        const {container} = render(wrapDNDIntl(
+            <TreeList
+                card={card}
+                board={board}
+                cards={cards}
+                visiblePropertyTemplates={[propertyTemplate]}
+                visibleBadges={false}
+                readonly={false}
+                visited={[card.id]}
+                matrix={matrix}
+                root={true}
+            />,
+        ), {wrapper: MemoryRouter})
+
+        expect(container).toMatchSnapshot()
+    })
+
+    test('should generate treeList of two nested cards', () => {
+        const cards = [card1, card2]
+        const matrix = new CardsAdjacencyList(cards)
+        const {container} = render(wrapDNDIntl(
+
+            <TreeList
+                card={card1}
+                board={board}
+                cards={cards}
+                visiblePropertyTemplates={[propertyTemplate]}
+                visibleBadges={false}
+                readonly={false}
+                visited={[]}
+                matrix={matrix}
+                root={true}
+            />,
+        ), {wrapper: MemoryRouter})
+
+        expect(container).toMatchSnapshot()
+    })
+
+    test('should generate treeList of one card card', () => {
+        const cards = [card, card1, card2]
+        const matrix = new CardsAdjacencyList(cards)
+        const {container} = render(wrapDNDIntl(
+
+            <TreeList
+                card={card}
+                board={board}
+                cards={cards}
+                visiblePropertyTemplates={[propertyTemplate]}
+                visibleBadges={false}
+                readonly={false}
+                visited={[]}
+                matrix={matrix}
+                root={true}
+            />,
+        ), {wrapper: MemoryRouter})
+
+        expect(container).toMatchSnapshot()
     })
 })

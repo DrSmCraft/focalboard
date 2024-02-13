@@ -112,7 +112,7 @@ const Tree = (props: Props): JSX.Element => {
                     board={board}
                     cards={cards}
                     matrix={adjList}
-                    cardId={card.id}
+                    card={card}
                     visited={visited}
                     root={true}
                     onDrop={onDropToCard}

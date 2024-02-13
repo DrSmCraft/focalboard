@@ -6,8 +6,6 @@ import {Board, IPropertyTemplate} from '../../blocks/board'
 import {Card} from '../../blocks/card'
 
 import './treeList.scss'
-import {useAppSelector} from '../../store/hooks'
-import {getCard} from '../../store/cards'
 
 import {IDType, Utils} from '../../utils'
 
@@ -18,7 +16,7 @@ type Props = {
     board: Board
     cards: Card[]
     matrix: CardsAdjacencyList
-    cardId: string
+    card: Card
     visited: string[]
     root?: boolean
     onClick?: (e: React.MouseEvent, card: Card) => void
@@ -35,7 +33,7 @@ const TreeList = (props: Props): JSX.Element => {
         board,
         cards,
         matrix,
-        cardId,
+        card,
         visited,
         root,
         showCard,
@@ -46,17 +44,17 @@ const TreeList = (props: Props): JSX.Element => {
         readonly,
     } = props
 
+    const cardId = card.id
     const selfVisited = visited.includes(cardId)
     const classname: string = root ? 'TreeList TreeListRoot' : 'TreeList'
 
-    const card = useAppSelector(getCard(cardId))
-
-    visited.push(cardId)
+    if (!visited.includes(cardId)) {
+        visited.push(cardId)
+    }
     const children = matrix.getChildren(cardId).filter((c) => !visited.includes(c.id))
 
     return (
         <>
-
             {(selfVisited || card === undefined) ? <></> : <ul className={classname}>
                 <li>
                     <TreeCard
@@ -80,7 +78,7 @@ const TreeList = (props: Props): JSX.Element => {
                             board={board}
                             cards={cards}
                             matrix={matrix}
-                            cardId={n.id}
+                            card={n}
                             visited={visited}
                             root={false}
                             onClick={onClick}
@@ -89,7 +87,7 @@ const TreeList = (props: Props): JSX.Element => {
                             visibleBadges={visibleBadges}
                             visiblePropertyTemplates={visiblePropertyTemplates}
                             readonly={readonly}
-                        />)
+                                />)
                     },
                     )
                     }
