@@ -2,7 +2,6 @@
 // See LICENSE.txt for license information.
 import {TestBlockFactory} from '../test/testBlockFactory'
 
-import {createPatchesFromBlocks, createBlock} from './block'
 import CardsAdjacencyList from './cardsAdjacencyList'
 
 describe('cardsAdjacencyList tests', () => {
