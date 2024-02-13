@@ -1,27 +1,27 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, { useCallback, useMemo, useState } from "react";
-import { useRouteMatch } from "react-router-dom";
-import { useIntl } from "react-intl";
+import React, {useCallback, useMemo, useState} from 'react'
+import {useRouteMatch} from 'react-router-dom'
+import {useIntl} from 'react-intl'
 
-import { Board, IPropertyTemplate } from "../../blocks/board";
-import { Card } from "../../blocks/card";
-import { useSortable } from "../../hooks/sortable";
-import mutator from "../../mutator";
-import TelemetryClient, { TelemetryActions, TelemetryCategory } from "../../telemetry/telemetryClient";
-import { Utils } from "../../utils";
-import MenuWrapper from "../../widgets/menuWrapper";
-import Tooltip from "../../widgets/tooltip";
-import PropertyValueElement from "../propertyValueElement";
-import ConfirmationDialogBox, { ConfirmationDialogBoxProps } from "../confirmationDialogBox";
-import CardBadges from "../cardBadges";
-import OpenCardTourStep from "../onboardingTour/openCard/open_card";
-import CopyLinkTourStep from "../onboardingTour/copyLink/copy_link";
-import CardActionsMenu from "../cardActionsMenu/cardActionsMenu";
-import CardActionsMenuIcon from "../cardActionsMenu/cardActionsMenuIcon";
-import "./treeCard.scss";
+import {Board, IPropertyTemplate} from '../../blocks/board'
+import {Card} from '../../blocks/card'
+import {useSortable} from '../../hooks/sortable'
+import mutator from '../../mutator'
+import TelemetryClient, {TelemetryActions, TelemetryCategory} from '../../telemetry/telemetryClient'
+import {Utils} from '../../utils'
+import MenuWrapper from '../../widgets/menuWrapper'
+import Tooltip from '../../widgets/tooltip'
+import PropertyValueElement from '../propertyValueElement'
+import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from '../confirmationDialogBox'
+import CardBadges from '../cardBadges'
+import OpenCardTourStep from '../onboardingTour/openCard/open_card'
+import CopyLinkTourStep from '../onboardingTour/copyLink/copy_link'
+import CardActionsMenu from '../cardActionsMenu/cardActionsMenu'
+import CardActionsMenuIcon from '../cardActionsMenu/cardActionsMenuIcon'
+import './treeCard.scss'
 
-export const OnboardingCardClassName = "onboardingCard";
+export const OnboardingCardClassName = 'onboardingCard'
 
 type Props = {
     card: Card
@@ -38,81 +38,80 @@ type Props = {
 }
 
 const TreeCard = (props: Props) => {
-    const { card, board } = props;
-    const intl = useIntl();
-    const [isDragging, isOver, cardRef] = useSortable("card", card, !props.readonly,
+    const {card, board} = props
+    const intl = useIntl()
+    const [isDragging, isOver, cardRef] = useSortable('card', card, !props.readonly,
         props.onDrop == undefined ? (src: Card, st: Card) => {
-        } : props.onDrop);
-    const visiblePropertyTemplates = props.visiblePropertyTemplates || [];
-    const match = useRouteMatch<{ boardId: string, viewId: string, cardId?: string }>();
-    let className = props.isSelected ? "TreeCard selected" : "TreeCard";
+        } : props.onDrop)
+    const visiblePropertyTemplates = props.visiblePropertyTemplates || []
+    const match = useRouteMatch<{ boardId: string, viewId: string, cardId?: string }>()
+    let className = props.isSelected ? 'TreeCard selected' : 'TreeCard'
     if (props.isManualSort && isOver) {
-        className += " dragover";
+        className += ' dragover'
     }
 
-    const [showConfirmationDialogBox, setShowConfirmationDialogBox] = useState<boolean>(false);
+    const [showConfirmationDialogBox, setShowConfirmationDialogBox] = useState<boolean>(false)
     const handleDeleteCard = useCallback(() => {
         if (!card) {
-            Utils.assertFailure();
-            return;
+            Utils.assertFailure()
+            return
         }
-        TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.DeleteCard, { board: board.id, card: card.id });
-        mutator.deleteBlock(card, "delete card");
-    }, [card, board.id]);
+        TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.DeleteCard, {board: board.id, card: card.id})
+        mutator.deleteBlock(card, 'delete card')
+    }, [card, board.id])
 
     const confirmDialogProps: ConfirmationDialogBoxProps = useMemo(() => {
         return {
             heading: intl.formatMessage({
-                id: "CardDialog.delete-confirmation-dialog-heading",
-                defaultMessage: "Confirm card delete!"
+                id: 'CardDialog.delete-confirmation-dialog-heading',
+                defaultMessage: 'Confirm card delete!',
             }),
             confirmButtonText: intl.formatMessage({
-                id: "CardDialog.delete-confirmation-dialog-button-text",
-                defaultMessage: "Delete"
+                id: 'CardDialog.delete-confirmation-dialog-button-text',
+                defaultMessage: 'Delete',
             }),
             onConfirm: handleDeleteCard,
             onClose: () => {
-                setShowConfirmationDialogBox(false);
-            }
-        };
-    }, [handleDeleteCard]);
+                setShowConfirmationDialogBox(false)
+            },
+        }
+    }, [handleDeleteCard])
 
     const handleDeleteButtonOnClick = useCallback(() => {
         // user trying to delete a card with blank name
         // but content present cannot be deleted without
         // confirmation dialog
-        if (card?.title === "" && card?.fields?.contentOrder?.length === 0) {
-            handleDeleteCard();
-            return;
+        if (card?.title === '' && card?.fields?.contentOrder?.length === 0) {
+            handleDeleteCard()
+            return
         }
-        setShowConfirmationDialogBox(true);
-    }, [handleDeleteCard, card.title, card?.fields?.contentOrder?.length]);
+        setShowConfirmationDialogBox(true)
+    }, [handleDeleteCard, card.title, card?.fields?.contentOrder?.length])
 
     const handleOnClick = useCallback((e: React.MouseEvent) => {
         if (props.onClick) {
-            props.onClick(e, card);
+            props.onClick(e, card)
         }
-    }, [props.onClick, card]);
+    }, [props.onClick, card])
 
-    const isOnboardingCard = card.title === "Create a new card";
-    const showOnboarding = isOnboardingCard && !match.params.cardId && !board.isTemplate && Utils.isFocalboardPlugin();
-
+    const isOnboardingCard = card.title === 'Create a new card'
+    const showOnboarding = isOnboardingCard && !match.params.cardId && !board.isTemplate && Utils.isFocalboardPlugin()
 
     return (
         <>
             <div
                 ref={props.readonly ? () => null : cardRef}
-                className={`${className} ${showOnboarding && OnboardingCardClassName}`}
+                className={`${className} ${showOnboarding ? OnboardingCardClassName : ''}`}
                 draggable={!props.readonly}
-                style={{ opacity: isDragging ? 0.5 : 1 }}
+                style={{opacity: isDragging ? 0.5 : 1}}
                 onClick={handleOnClick}
             >
                 {!props.readonly &&
                     <MenuWrapper
-                        className={`optionsMenu ${showOnboarding ? "show" : ""}`}
+                        className={`optionsMenu ${showOnboarding ? 'show' : ''}`}
                         stopPropagationOnToggle={true}
                     >
-                        <CardActionsMenuIcon />
+                        <CardActionsMenuIcon/>
                         <CardActionsMenu
                             cardId={card!.id}
                             boardId={card!.boardId}
@@ -120,40 +119,40 @@ const TreeCard = (props: Props) => {
                             onClickDuplicate={() => {
                                 TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.DuplicateCard, {
                                     board: board.id,
-                                    card: card.id
-                                });
+                                    card: card.id,
+                                })
                                 mutator.duplicateCard(
                                     card.id,
                                     board.id,
                                     false,
-                                    "duplicate card",
+                                    'duplicate card',
                                     false,
                                     {},
                                     async (newCardId) => {
                                         if (props.showCard === undefined) {
-                                            return;
+                                            return
                                         }
-                                        props.showCard(newCardId);
+                                        props.showCard(newCardId)
                                     },
                                     async () => {
                                         if (props.showCard === undefined) {
-                                            return;
+                                            return
                                         }
-                                        props.showCard(undefined);
-                                    }
-                                );
+                                        props.showCard(undefined)
+                                    },
+                                )
                             }}
                         />
                     </MenuWrapper>
                 }
 
-                <div className="octo-icontitle">
-                    {card.fields.icon ? <div className="octo-icon">{card.fields.icon}</div> : undefined}
+                <div className='octo-icontitle'>
+                    {card.fields.icon ? <div className='octo-icon'>{card.fields.icon}</div> : undefined}
                     <div
-                        key="__title"
-                        className="octo-titletext"
+                        key='__title'
+                        className='octo-titletext'
                     >
-                        {card.title || intl.formatMessage({ id: "TreeCard.untitled", defaultMessage: "Untitled" })}
+                        {card.title || intl.formatMessage({id: 'TreeCard.untitled', defaultMessage: 'Untitled'})}
                     </div>
                 </div>
                 {visiblePropertyTemplates.map((template) => (
@@ -170,15 +169,15 @@ const TreeCard = (props: Props) => {
                         />
                     </Tooltip>
                 ))}
-                {props.visibleBadges && <CardBadges card={card} />}
-                {showOnboarding && !match.params.cardId && <OpenCardTourStep />}
-                {showOnboarding && !match.params.cardId && <CopyLinkTourStep />}
+                {props.visibleBadges && <CardBadges card={card}/>}
+                {showOnboarding && !match.params.cardId && <OpenCardTourStep/>}
+                {showOnboarding && !match.params.cardId && <CopyLinkTourStep/>}
             </div>
 
-            {showConfirmationDialogBox && <ConfirmationDialogBox dialogBox={confirmDialogProps} />}
+            {showConfirmationDialogBox && <ConfirmationDialogBox dialogBox={confirmDialogProps}/>}
 
         </>
-    );
-};
+    )
+}
 
-export default React.memo(TreeCard);
+export default React.memo(TreeCard)

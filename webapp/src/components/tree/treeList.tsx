@@ -1,14 +1,18 @@
-import React from "react";
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+import React from 'react'
 
-import { Board, IPropertyTemplate } from "../../blocks/board";
-import { Card } from "../../blocks/card";
+import {Board, IPropertyTemplate} from '../../blocks/board'
+import {Card} from '../../blocks/card'
 
-import "./treeList.scss";
-import { useAppSelector } from "../../store/hooks";
-import { getCard } from "../../store/cards";
-import TreeCard from "./treeCard";
-import CardsAdjacencyList from "./cardsAdjacencyList";
-import { IDType, Utils } from "../../utils";
+import './treeList.scss'
+import {useAppSelector} from '../../store/hooks'
+import {getCard} from '../../store/cards'
+
+import {IDType, Utils} from '../../utils'
+
+import TreeCard from './treeCard'
+import CardsAdjacencyList from './cardsAdjacencyList'
 
 type Props = {
     board: Board
@@ -26,7 +30,6 @@ type Props = {
 
 }
 
-
 const TreeList = (props: Props): JSX.Element => {
     const {
         board,
@@ -40,22 +43,19 @@ const TreeList = (props: Props): JSX.Element => {
         onDrop,
         visibleBadges,
         visiblePropertyTemplates,
-        readonly
-    } = props;
+        readonly,
+    } = props
 
-    let selfVisited = visited.includes(cardId);
-    const classname: string = root ? "TreeList TreeListRoot" : "TreeList";
+    const selfVisited = visited.includes(cardId)
+    const classname: string = root ? 'TreeList TreeListRoot' : 'TreeList'
 
-    let card = useAppSelector(getCard(cardId));
+    const card = useAppSelector(getCard(cardId))
 
-
-    visited.push(cardId);
-    let children = matrix.getChildren(cardId).filter((c) => !visited.includes(c.id));
-
+    visited.push(cardId)
+    const children = matrix.getChildren(cardId).filter((c) => !visited.includes(c.id))
 
     return (
         <>
-
 
             {(selfVisited || card === undefined) ? <></> : <ul className={classname}>
                 <li>
@@ -71,26 +71,26 @@ const TreeList = (props: Props): JSX.Element => {
                         onDrop={onDrop}
                         showCard={showCard}
                         isManualSort={true}
-                        visited={visited} />
+                        visited={visited}
+                    />
 
                     {children.map((n: Card) => {
-                            return (<TreeList
-                                key={Utils.createGuid(IDType.None)}
-                                board={board}
-                                cards={cards}
-                                matrix={matrix}
-                                cardId={n.id}
-                                visited={visited}
-                                root={false}
-                                onClick={onClick}
-                                onDrop={onDrop}
-                                showCard={showCard}
-                                visibleBadges={visibleBadges}
-                                visiblePropertyTemplates={visiblePropertyTemplates}
-                                readonly={readonly}
-                            />);
-
-                        }
+                        return (<TreeList
+                            key={Utils.createGuid(IDType.None)}
+                            board={board}
+                            cards={cards}
+                            matrix={matrix}
+                            cardId={n.id}
+                            visited={visited}
+                            root={false}
+                            onClick={onClick}
+                            onDrop={onDrop}
+                            showCard={showCard}
+                            visibleBadges={visibleBadges}
+                            visiblePropertyTemplates={visiblePropertyTemplates}
+                            readonly={readonly}
+                        />)
+                    },
                     )
                     }
                 </li>
@@ -99,8 +99,7 @@ const TreeList = (props: Props): JSX.Element => {
 
         </>
 
-    );
+    )
+}
 
-};
-
-export default TreeList;
+export default TreeList

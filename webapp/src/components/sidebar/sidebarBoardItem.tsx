@@ -40,7 +40,7 @@ import octoClient from '../../octoClient'
 import {getCurrentBoardId} from '../../store/boards'
 import {UserSettings} from '../../userSettings'
 import {Archiver} from '../../archiver'
-import TreeIcon from "../../widgets/icons/tree";
+import TreeIcon from '../../widgets/icons/tree'
 
 const iconForViewType = (viewType: IViewType): JSX.Element => {
     switch (viewType) {
