@@ -105,6 +105,7 @@ const TreeCard = (props: Props) => {
                 draggable={!props.readonly}
                 style={{opacity: isDragging ? 0.5 : 1}}
                 onClick={handleOnClick}
+                data-testid={'treecard-' + card.id}
             >
                 {!props.readonly &&
                     <MenuWrapper
